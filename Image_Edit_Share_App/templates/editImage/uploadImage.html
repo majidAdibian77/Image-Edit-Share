@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% extends "mainPages/base.html" %}
+{% block body_block %}
+    <div class="container">
+        <div class="jumbotron my_form">
+            <h2>Upload your image:</h2>
+            <p>Please upload your image:</p>
+            <p>{{ error }}</p>
+            {% if form %}
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="save btn btn-default">Upload</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

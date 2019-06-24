@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+{% extends 'mainPages/base.html' %}
+{% block body_block %}
+
+    <main role="main" class="container">
+        <section class="jumbotron text-center">
+            <div class="container">
+                <h1 class="jumbotron-heading">Image Edit and Share</h1>
+                <p class="lead text-muted">Something short and leading about the collection below—its contents, the
+                    creator,
+                    etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>
+                <p>
+                    <a href="#" class="btn btn-primary my-2">Main call to action</a>
+                    <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+                </p>
+            </div>
+        </section>
+        <div class="row">
+            <div class="col-md-8 blog-main">
+
+
+                {#    <form class="form-signin">#}
+                <h1 class="h3 mb-3 font-weight-normal">Please sign up</h1>
+                {% if user_error or profile_error %}
+                    <h1>wwwwwwwww}</h1>
+                {% else %}
+                    <form enctype="multipart/form-data" method="POST">
+                        {% csrf_token %}
+                        {{ user_form.as_p }}
+                        {{ profile_form.as_p }}
+                        <input type="submit" class="btn btn-primary" value="Sign up">
+                    </form>
+
+                {% endif %}
+
+            </div><!-- /.blog-main -->
+            <aside class="col-md-4 blog-sidebar">
+                <div class="p-4 mb-3 bg-light rounded">
+                    <h4 class="font-italic">About</h4>
+                    <p class="mb-0">Etiam porta <em>sem malesuada magna</em> mollis euismod. Cras mattis consectetur
+                        purus
+                        sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.</p>
+                </div>
+
+                <div class="p-4">
+                    <h4 class="font-italic">Top Users</h4>
+                    <ol class="list-unstyled mb-0">
+                        <li><a href="#">Majid Adibian</a></li>
+                        <li><a href="#">Soros Mortazavi</a></li>
+                        <li><a href="#">Mahrab Safdel</a></li>
+                        <li><a href="#">Alireza Abedini</a></li>
+                    </ol>
+                </div>
+            </aside><!-- /.blog-sidebar -->
+
+        </div><!-- /.row -->
+
+    </main><!-- /.container -->
+
+
+
+    {##}
+    {#    <form class="form-signin">#}
+    {#        <img class="mb-4" src="/docs/4.3/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">#}
+    {#        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>#}
+    {#        <label for="inputEmail" class="sr-only">Email address</label>#}
+    {#        <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>#}
+    {#        <label for="inputPassword" class="sr-only">Password</label>#}
+    {#        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>#}
+    {#        <div class="checkbox mb-3">#}
+    {#            <label>#}
+    {#                <input type="checkbox" value="remember-me"> Remember me#}
+    {#            </label>#}
+    {#        </div>#}
+    {#        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>#}
+    {#        <p class="mt-5 mb-3 text-muted">&copy; 2017-2019</p>#}
+    {#    </form>#}
+{% endblock %}

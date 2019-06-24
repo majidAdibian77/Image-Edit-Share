@@ -1,0 +1,9 @@
+nav{
+    background: #abdde5;
+}
+
+#welcome-button{
+    border-radius: 5px;
+    border: darkred solid;
+    padding:5px;
+}

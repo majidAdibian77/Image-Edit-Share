@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% extends "mainPages/base.html" %}
+{% load static %}
+{% block body_block %}
+    <h2>change your image:</h2>
+    <div class=container>
+        <div class="change_image">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="change-image-buttons">
+                        <div class="column_buttons">
+                            <button onclick="reset_image();">reset</button>
+                            <button onclick="change_black_white();">B_W</button>
+                        </div>
+                        <label for="height_image">height</label>
+                        <input type="number" id="height_image" min="300" max="600">
+                        <label for="width_image">width</label>
+                        <input type="number" id="width_image" min="200" max="500">
+                        <button onclick="change_size();">resize</button>
+                        <div class="change-contract-range">
+                            <label for="contract_range">contract</label>
+                            <input onchange="change_contract();" type="range" min="0" max="2" value="1" step="0.1"
+                                   class="slider"
+                                   id="contract_range">
+                        </div>
+                        <p></p>
+                        <label for="post_text">Add a text for post:</label>
+                        <input id="post_text" name="{{ img.pk }}">
+                        <button onclick="post_button();" type="submit">POST</button>
+                        <a id="download-link" href="{{ img.image.url }}">
+                            <button onclick="download();">Download</button>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    {% if img %}
+                        {% if img.user == user %}
+                            <div class="image">
+                                <img id="show_image" name="{{ img.image.url }}" src="{{ img.image.url }}"
+                                     alt="your image"
+                                     width="{{ img.image.width }}"
+                                     height="{{ img.image.height }}"
+                                     style="margin: 20px"/>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

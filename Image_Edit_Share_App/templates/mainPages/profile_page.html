@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+{% extends "mainPages/base.html" %}
+{% block body_block %}
+    <h2>Profile:</h2>
+    {% if user_info %}
+        <div class="profile_page">
+            <img src="{{ user_info.profile_pic.url }}" width="400" height="400">
+            <h3><b>Name: {{ user_info.user.first_name }} {{ user_info.user.last_name }}</b></h3>
+            <h3><b>Bio: </b>{{ user_info.bio }}</h3>
+            <h3><b>score: </b>{{ user_info.score }}</h3>
+            <h3><b>type of user: </b>{{ user_info.typeOfUser }}</h3>
+
+            {% if user.user == user_info.user.user %}
+                <a href="{% url "edit_profile" %}">
+                    <button id="edit-profile">edit</button>
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+    <h2>Posts:</h2>
+    {% for temp_user_posts in user_posts %}
+        <div class="profile_page">
+            <img src="{{ temp_user_posts.image.url }}" width="{{ temp_user_posts.image.width }}"
+                 height="{{ temp_user_posts.image.height }}">
+            <h3><b>{{ temp_user_posts.post }}</b></h3>
+            <h3>score:{{ temp_user_posts.score }}</h3>
+            <p>{{ temp_user_posts.post_time }}</p>
+            {% if user == temp_user_posts.user %}
+                <a href="{% url "delete_post" pk=temp_user_posts.pk %}">
+                    <button id="delete-post">delete</button>
+                </a>
+            {% endif %}
+            <div class="all-comment">
+                {% if user != temp_user_posts.user %}
+                    <label for="user-comment-{{ temp_user_posts.pk }}">comment:</label>
+                    <input id="user-comment-{{ temp_user_posts.pk }}" type="text">
+                    <button onclick="add_comment_button({{ temp_user_posts.pk }});">add comment</button>
+
+                {% endif %}
+                <h3>comments:</h3>
+                {% for comment in temp_user_posts.comments.all %}
+                    {% if not comment.approved %}
+                        {% if user == temp_user_posts.user %}
+                            <div class="comment-post">
+                                <p><b>{{ comment.user.first_name }} {{ comment.user.last_name }}:</b></p>
+                                <img src="{{ comment.user.userProfileInfo.profile_pic.url }}" width="50" height="50">
+                                <p>{{ comment.text }}</p>
+                                <button onclick="approve_comment({{ comment.pk }});"
+                                        id="approve-comment-"{{ comment.pk }}>
+                                    approve
+                                </button>
+                                <button onclick="delete_comment({{ comment.pk }});"
+                                        id="delete-comment-"{{ comment.pk }}>
+                                    delete
+                                </button>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                {% for comment in temp_user_posts.comments.all %}
+                    {% if comment.approved %}
+                        <div class="comment-post">
+                            <p><b>{{ comment.user.first_name }} {{ comment.user.last_name }}:</b></p>
+                            <img src="{{ comment.user.userProfileInfo.profile_pic.url }}" width="50" height="50">
+                            <p>{{ comment.text }}</p>
+                            {% if user == temp_user_posts.user %}
+                                <button onclick="delete_comment({{ comment.pk }});"
+                                        id="delete-comment-"{{ comment.pk }}>
+                                    delete
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+        </div>
+    {% endfor %}
+
+{% endblock %}
