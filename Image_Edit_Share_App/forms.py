@@ -10,8 +10,8 @@ class UserForm(UserCreationForm):
                                 required=True, help_text="enter your password")
     password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}),
                                 required=True, help_text="enter your password again")
-    first_name = forms.CharField(max_length=30, required=True,widget=forms.TextInput(attrs={'class': 'form-control'}))
-    last_name = forms.CharField(max_length=30, required=True,widget=forms.TextInput(attrs={'class': 'form-control'}))
+    first_name = forms.CharField(max_length=15, required=True,widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(max_length=15, required=True,widget=forms.TextInput(attrs={'class': 'form-control'}))
     email = forms.EmailField(max_length=254, required=True,widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:

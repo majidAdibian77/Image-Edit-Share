@@ -13,11 +13,13 @@ urlpatterns = [
     url(r'^delete_post/(?P<pk>\d+)$', views.delete_post, name="delete_post"),
     url(r'^change_black_white$', views.change_black_white, name="change_black_white"),
     url(r"^reset_image$", views.reset_image, name="reset_image"),
-    url(r"^change_size_of_image$", views.change_size_of_image, name="change_size_of_image"),
+    url(r"^change_size_of_image/(?P<pk>\d+)$", views.change_size_of_image, name="change_size_of_image"),
     url(r"^change_contract_image$", views.change_contract_image, name="change_contract_image"),
     url(r"^add_score_image$", views.add_score_image, name="add_score_image"),
     url(r"^delete_comment$", views.delete_comment, name="delete_comment"),
     url(r"^approve_comment$", views.approve_comment, name="approve_comment"),
-    url(r"^user_add_comment", views.user_add_comment, name="user_add_comment"),
+    url(r"^user_add_comment$", views.user_add_comment, name="user_add_comment"),
+    url(r"^rotate$", views.rotate, name="rotate"),
+    url(r"^transpose$", views.transpose, name="transpose"),
 ]
 

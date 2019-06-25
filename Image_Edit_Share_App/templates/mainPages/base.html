@@ -45,62 +45,65 @@
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
 
 </head>
-<body >
+<body>
 <style>
-#myHeader {
-    background-color: lightblue;
-}
+    #myHeader {
+        background-color: lightblue;
+    }
 
-#log {
-    margin-left: 820px;
-}
-
+    #log {
+        margin-left: 820px;
+    }
 </style>
-
 
 
 <div class="container">
     <header class="blog-header py-3">
-{#        <br class="row flex-nowrap justify-content-between align-items-center" style="background-color:lightskyblue;">#}
+        <div style="float: left ;margin: 5px; padding: 5px; border-bottom: white; background: #0389D2; color: white"
+             class="d-flex justify-content-end align-items-center" id="myHeader">
 
-            <div style="float: left" class="d-flex justify-content-end align-items-center" id="myHeader">
+            <a class="bd-placeholder-img" href="{% url "home" %}" id="myHeader"
+               style="color: white;margin-right:10px; background-color: #0389D2">Home</a>
+            <a class="bd-placeholder-img" href="{% url "contact_us" %}" id="myHeader"
+               style="color: white;margin-right: 10px; background-color: #0389D2">Contact_Us</a>
 
-            <a class="p-2 text-muted" href="{% url "home" %}" id="myHeader" >Home </a>
-            <a class="p-2 text-muted" href="{% url "uploadImage" %}" id="myHeader">Edit image </a>
+            {% if not user.is_superuser  and user.is_authenticated %}
+                <a class="bd-placeholder-img" href="{% url "profile_page" pk=user.id %}" id="myHeader"
+                   style="color: white;margin-right: 10px ; background-color: #0389D2">profile </a>
+                <a class="bd-placeholder-img" href="{% url "uploadImage" %}" id="myHeader"
+                   style="color: white;margin: 5px ; background-color: #0389D2">EditImage </a>
+            {% endif %}
             <div id="log">
                 {% if not user.is_authenticated %}
-                    <a class="btn btn-sm btn-outline-secondary" href="{% url "login" %}">Log in</a>
-                    <a class="btn btn-sm btn-outline-secondary" href="{% url "register" %}" >Sign up</a>
+                    <div class="row" style="color: white; margin-right: 5px">
+                        <a class="btn btn-sm btn-outline-secondary" href="{% url "login" %}"
+                           style="color: white;">Log in</a>
+                        <a class="btn btn-sm btn-outline-secondary" href="{% url "register" %}"
+                           style="color: white;">Sign up</a>
+                    </div>
                 {% else %}
-                    <a href="{% url  "logout" %}" style="margin-left: 60px"><b class="btn btn-sm btn-outline-secondary">log out</b></a>
+                    <a href="{% url  "logout" %}" style="margin-left: 70px; color: white"><b>logOut</b></a>
                 {% endif %}
             </div>
-            </div>
-            <br>
-    <br>
+        </div>
+        <br>
+        <br>
 
         {% if user.is_authenticated %}
-                <div class="col-2 pt-1" >
-                    {% if  user.first_name %}
-                        <div><a
-                                href="{% url  "profile_page" pk=user.id %}"><b
-                                class="navbar-items">welcome: {{ user.first_name }}</b></a>
-                        </div>
-                    {% else %}
-                        <div><a href="{% url  "profile_page" pk=user.id %}"><b
-                                class="navbar-items">welcome: {{ user.username }}</b></a>
-                        </div>
-                    {% endif %}
-                </div>
-            {% endif %}
+            <div class="col-3 pt-1">
+                {% if  user.first_name %}
+                    <div><a
+                            href="{% url  "profile_page" pk=user.id %}"><b
+                            class="navbar-items">welcome: {{ user.first_name }}</b></a>
+                    </div>
+                {% else %}
+                    <div><a href="{% url  "profile_page" pk=user.id %}"><b
+                            class="navbar-items">welcome: {{ user.username }}</b></a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
     </header>
-
-{#    <div class="nav-scroller py-1 mb-2">#}
-{#        <nav class="nav d-flex justify-content-between navbar-right">#}
-{#            <a class="p-2 text-muted" href="{% url "home" %}">Home</a>#}
-{#            <a class="p-2 text-muted" href="{% url "uploadImage" %}">Edit image</a>#}
-{#        </nav>#}
-{#    </div>#}
     {% block body_block %}
     {% endblock %}
 </div>

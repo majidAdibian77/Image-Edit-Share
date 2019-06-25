@@ -6,7 +6,6 @@ function post_button() {
         data: {
             "post_text": $('#post_text').val(),
             "post_pk": $('#post_text').attr('name'),
-            "image_url": $('#show_image').attr('src'),
         },
         dataType: "json",
         success: function (data) {
@@ -60,41 +59,55 @@ function reset_image() {
     }
 }
 
-function change_size() {
+function change_size(user_pk) {
     var width_image = $('#width_image');
     var height_image = $('#height_image');
     var width = width_image.val();
     var height = height_image.val();
-    if (width < 200) {
+    var width_origin = width_image.val();
+    var height_origin = height_image.val();
+    if (width < 20) {
         width_image.css('background', 'red');
-        width_image.val(200);
-        width = 200;
+        width_image.val(20);
+        width = 20;
+        width_origin = 20;
     }
-    else if (width > 500) {
-        width_image.css('background', 'red');
-        width_image.val(400);
-        width = 400;
+    else if (width > 600) {
+        // width_image.css('background', 'red');
+        // width_image.val(600);
+        width = 600;
     }
-    if (height < 300) {
+    if (height < 20) {
         height_image.css('background', 'red');
-        height_image.val(300);
-        height = 300;
+        height_image.val(20);
+        height = 20;
+        height_origin = 20;
     }
     else if (height > 600) {
-        height_image.css('background', 'red');
-        height_image.val(500);
-        height = 500;
+        // height_image.css('background', 'red');
+        // height_image.val(600);
+        height = 600;
     }
     $.ajax({
         type: "GET",
-        url: '/change_size_of_image',
+        url: '/change_size_of_image/' + user_pk,
         data: {
             "image_url": $('#show_image').attr('name'),
-            "width": width,
-            "height": height,
+            "width": width_origin,
+            "height": height_origin,
         },
         dataType: "json",
         success: function (data) {
+            if (data["height"] != height_origin) {
+                alert("You are a " + data["type_user"]+ " yet!");
+                height_image.css('background', 'red');
+                height_image.val(data["height"]);
+            }
+            if(data["width"] != width_origin){
+                alert("You are a " + data["type_user"]+ " yet!");
+                width_image.css('background', 'red');
+                width_image.val(data["width"]);
+            }
             $("#show_image").attr("src", data["newImage_url"]);
             $('#show_image').attr('width', width);
             $('#show_image').attr('height', height);
@@ -115,7 +128,61 @@ function change_contract() {
         },
         dataType: "json",
         success: function (data) {
-            alert(data["newImage_url"]);
+            $("#show_image").attr("src", data["newImage_url"]);
+        },
+        failure: function (data) {
+            alert('There is a problem!!!');
+        }
+    });
+}
+
+function rotate_clock_wise() {
+    $.ajax({
+        type: "GET",
+        url: '/rotate',
+        data: {
+            "image_url": $('#show_image').attr('name'),
+            "new_image_url": $('#show_image').attr('src'),
+            "clock_wise":true,
+        },
+        dataType: "json",
+        success: function (data) {
+            $("#show_image").attr("src", data["newImage_url"]);
+        },
+        failure: function (data) {
+            alert('There is a problem!!!');
+        }
+    });
+}
+
+function rotate_anti_clock_wise() {
+    $.ajax({
+        type: "GET",
+        url: '/rotate',
+        data: {
+            "image_url": $('#show_image').attr('name'),
+            "new_image_url": $('#show_image').attr('src'),
+            "clock_wise":true,
+        },
+        dataType: "json",
+        success: function (data) {
+            $("#show_image").attr("src", data["newImage_url"]);
+        },
+        failure: function (data) {
+            alert('There is a problem!!!');
+        }
+    });
+}
+function transpose() {
+    $.ajax({
+        type: "GET",
+        url: '/transpose',
+        data: {
+            "image_url": $('#show_image').attr('name'),
+            "new_image_url": $('#show_image').attr('src'),
+        },
+        dataType: "json",
+        success: function (data) {
             $("#show_image").attr("src", data["newImage_url"]);
         },
         failure: function (data) {

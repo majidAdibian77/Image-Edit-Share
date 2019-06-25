@@ -4,13 +4,13 @@
     <div class="container">
         <div class="jumbotron my_form">
             <h2>Upload your image:</h2>
-            <p>Please upload your image:</p>
+
             <p>{{ error }}</p>
             {% if form %}
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <button type="submit" class="save btn btn-default">Upload</button>
+                    <button type="submit" class="save btn btn-default" style="background-color: #0389D2; color: white; width: 20%">Upload</button>
                 </form>
             {% endif %}
         </div>

@@ -26,12 +26,18 @@ def home(request):
     return render(request, "mainPages/home.html", hash)
 
 
+def contact_us(request):
+    top_users = UserProfileInfo.objects.all().order_by("-score")[:5]
+    return render(request, "mainPages/contact_us.html", {'top_users': top_users})
+
+
 """ 
 This method is for user registering
 """
 
 
 def register(request):
+    top_users = UserProfileInfo.objects.all().order_by("-score")[:5]
     if request.method == 'POST':
         user_form = UserForm(data=request.POST)
         profile_form = UserProfileInfoForm(data=request.POST)
@@ -51,9 +57,11 @@ def register(request):
     else:
         user_form = UserForm()
         profile_form = UserProfileInfoForm()
+
     return render(request, "registration/register.html",
                   {'user_form': user_form,
-                   'profile_form': profile_form})
+                   'profile_form': profile_form,
+                   'top_users': top_users})
 
 
 #
@@ -80,7 +88,6 @@ def profile_page(request, pk):
         user_posts = PostModel.objects.filter(user=user).order_by("post_time")
         if user_posts:
             path = user_posts[0].image.url
-
             path = path[1:]
             new_path1 = path[:path.rfind('.')] + "_new1" + path[path.rfind('.'):]
             new_path2 = path[:path.rfind('.')] + "_new2" + path[path.rfind('.'):]
@@ -109,6 +116,7 @@ def edit_profile(request):
 
         if user_form.is_valid() and profile_form.is_valid():
             user = User.objects.get(pk=request.user.id)
+            user.username = user_form.cleaned_data.get("username")
             user.set_password = user_form.cleaned_data.get("password1")
             user.first_name = user_form.cleaned_data.get("first_name")
             user.last_name = user_form.cleaned_data.get("last_name")
@@ -129,6 +137,9 @@ def edit_profile(request):
     else:
         user_form = UserForm()
         profile_form = UserProfileInfoForm()
+        user = User.objects.get(pk=request.user.id)
+        user.username = "username_is_changed"
+        user.save()
     return render(request, "registration/register.html",
                   {'user_form': user_form,
                    'profile_form': profile_form})
@@ -178,25 +189,15 @@ def upload_image(request):
 """
 This method is called from js file to set post text to related post in data base
 """
+
+
 def set_post_text(request):
     post_text = request.GET.get("post_text", None)
     post_pk = request.GET.get("post_pk", None)
-    image_url = request.GET.get("image_url", None)
     post = PostModel.objects.get(pk=post_pk)
     post.text = post_text
     post.set_post_time()
     post.save()
-
-    path = post.image.url
-    path = path[1:]
-    new_path1 = path[:path.rfind('.')] + "_new1" + path[path.rfind('.'):]
-    new_path2 = path[:path.rfind('.')] + "_new2" + path[path.rfind('.'):]
-    if os.path.exists(new_path1):
-        os.remove(path)
-        os.renames(new_path1, path)
-    if os.path.exists(new_path2):
-        os.remove(path)
-        os.renames(new_path2, path)
     data = {
     }
     return JsonResponse(data)
@@ -205,11 +206,14 @@ def set_post_text(request):
 """
 This method renders page of edit image of post
 """
+
+
 @login_required
 def change_image(request):
     hash = {}
     image = PostModel.objects.filter(user=request.user).order_by("-post_time")[0]
     hash["img"] = image
+    hash["user"] = request.user
     path = image.image.url
     img = Image.open(path[1:])
     width = img.size[0]
@@ -225,45 +229,24 @@ def change_image(request):
     size = (width, height)
     temp_img = img.resize(size, Image.ANTIALIAS)
     temp_img.save(path[1:])
+
+    """"
+        Remove changed image if it exists after refreshing page
+    """
+    path2 = path[:path.rfind('.')] + "_new1" + path[path.rfind('.'):]
+    if os.path.exists(path2):
+        os.remove(path2)
+    path3 = path[:path.rfind('.')] + "_new2" + path[path.rfind('.'):]
+    if os.path.exists(path3):
+        os.remove(path3)
     return render(request, "editImage/editImage.html", hash)
-
-
-"""
-This method is called from js file to download edited image 
-"""
-
-
-# def download_image(request):
-#     # general_image_url = request.GET.get("general_image_url", None)
-#     new_image_url = request.GET.get("new_image_url", None)
-#     # image_file = Image.open(new_image_url[1:])
-#     urllib.request.urlretrieve(new_image_url, new_image_url[new_image_url.rfind('/'):])
-#     #
-#     # image_file = Image.open(new_image_url[1:])  # open colour image
-#     # image_file = image_file.convert('L')  # convert image to black and white
-#     #
-#     # new_image_url1 = general_image_url[:general_image_url.rfind('.')] + "_new1" + general_image_url[
-#     #                                                                               general_image_url.rfind('.'):]
-#     # new_image_url2 = general_image_url[:general_image_url.rfind('.')] + "_new2" + general_image_url[
-#     #                                                                               general_image_url.rfind('.'):]
-#     # if os.path.exists(new_image_url1[1:]):
-#     #     os.remove(new_image_url1[1:])
-#     #     new_image_url = new_image_url2
-#     # else:
-#     #     if os.path.exists(new_image_url2[1:]):
-#     #         os.remove(new_image_url2[1:])
-#     #     new_image_url = new_image_url1
-#     # image_file.save(new_image_url[1:])
-#     data = {
-#         "newImage_url": new_image_url
-#     }
-#     return JsonResponse(data)
-
 
 
 """
 This method is for delete image of post that user remove it from database
 """
+
+
 def delete_image_post(pk):
     img = PostModel.objects.get(pk=pk)
     path = img.image.url[1:]
@@ -278,21 +261,21 @@ def delete_image_post(pk):
     img.delete()
 
 
-
 """
 This method is for delete post from database
 """
+
+
 def delete_post(request, pk):
-    post = PostModel.objects.get(pk=pk)
-    post.delete()
     delete_image_post(pk)
     return redirect("profile_page", pk=request.user.id)
-
 
 
 """
 This method is called from js file to change image of post to black_white 
 """
+
+
 def change_black_white(request):
     general_image_url = request.GET.get("general_image_url", None)
     new_image_url = request.GET.get("new_image_url", None)
@@ -322,6 +305,8 @@ def change_black_white(request):
 """
 This method is called from js file to reset all changes on image in post
 """
+
+
 def reset_image(request):
     image_url = request.GET.get("image_url", None)
     path = image_url[1:]
@@ -349,10 +334,33 @@ def reset_image(request):
 """
 This method is called from js file to changes size of image in post
 """
-def change_size_of_image(request):
+
+
+def change_size_of_image(request, pk):
     image_url = request.GET.get("image_url", None)
-    width = request.GET.get("width", None)
-    height = request.GET.get("height", None)
+    width = int(request.GET.get("width", None))
+    height = int(request.GET.get("height", None))
+    user = User.objects.get(pk=pk)
+    user = UserProfileInfo.objects.filter(user=user)[0]
+    type_user = str(user.typeOfUser)
+    """
+    This "if" is to limit resizing image for different types of user
+    1280*720  for simple
+    1980*1080  for silver
+    any size for golden
+    """
+    if type_user == "simple":
+        if width > 1280:
+            width = 1280
+        if height > 720:
+            height = 720
+
+    if type_user == "silver":
+        if width > 1980:
+            width = 1980
+        if height > 1080:
+            height = 1080
+
     size = int(width), int(height)
     img = Image.open(image_url[1:])
     temp_img = img.resize(size, Image.ANTIALIAS)
@@ -367,7 +375,10 @@ def change_size_of_image(request):
         new_image_url = new_image_url1
     temp_img.save(new_image_url[1:])
     data = {
-        "newImage_url": new_image_url
+        "newImage_url": new_image_url,
+        "width": width,
+        "height": height,
+        "type_user": type_user,
     }
     return JsonResponse(data)
 
@@ -375,6 +386,8 @@ def change_size_of_image(request):
 """
 This method is called from js file to change contract of image in post
 """
+
+
 def change_contract_image(request):
     image_url = request.GET.get("image_url", None)
     factor = float(request.GET.get("factor", None))
@@ -399,8 +412,67 @@ def change_contract_image(request):
 
 
 """
+This method is called from js file to rotate of image
+"""
+
+
+def rotate(request):
+    image_url = request.GET.get("image_url", None)
+    new_image_url = request.GET.get("new_image_url", None)
+    clock_wise = request.GET.get("clock_wise", None)
+    image = Image.open(new_image_url[1:])
+    if clock_wise:
+        img = image.rotate(90)
+    else:
+        img = image.rotate(-90)
+    new_image_url1 = image_url[:image_url.rfind('.')] + "_new1" + image_url[image_url.rfind('.'):]
+    new_image_url2 = image_url[:image_url.rfind('.')] + "_new2" + image_url[image_url.rfind('.'):]
+    if os.path.exists(new_image_url1[1:]):
+        os.remove(new_image_url1[1:])
+        new_image_url = new_image_url2
+    else:
+        if os.path.exists(new_image_url2[1:]):
+            os.remove(new_image_url2[1:])
+        new_image_url = new_image_url1
+
+    img.save(new_image_url[1:])
+    data = {
+        "newImage_url": new_image_url,
+    }
+    return JsonResponse(data)
+
+
+"""
+This method is called from js file to transpose of image
+"""
+
+
+def transpose(request):
+    new_image_url = request.GET.get("new_image_url", None)
+    image_url = request.GET.get("image_url", None)
+    image = Image.open(new_image_url[1:])
+    transposed_img = image.transpose(Image.FLIP_LEFT_RIGHT)
+    new_image_url1 = image_url[:image_url.rfind('.')] + "_new1" + image_url[image_url.rfind('.'):]
+    new_image_url2 = image_url[:image_url.rfind('.')] + "_new2" + image_url[image_url.rfind('.'):]
+    if os.path.exists(new_image_url1[1:]):
+        os.remove(new_image_url1[1:])
+        new_image_url = new_image_url2
+    else:
+        if os.path.exists(new_image_url2[1:]):
+            os.remove(new_image_url2[1:])
+        new_image_url = new_image_url1
+    transposed_img.save(new_image_url[1:])
+    data = {
+        "newImage_url": new_image_url,
+    }
+    return JsonResponse(data)
+
+
+"""
 This method is called from js file to add comment to database but this comment isn't approve yet
 """
+
+
 def user_add_comment(request):
     post_pk = request.GET.get('post_pk', None)
     post = PostModel.objects.get(pk=post_pk)
@@ -417,6 +489,8 @@ def user_add_comment(request):
 """
 This method is called from js file to to approve comments 
 """
+
+
 def approve_comment(request):
     comment_pk = request.GET.get('comment_pk', None)
     comment = CommentPostModel.objects.get(pk=comment_pk)
@@ -431,6 +505,8 @@ def approve_comment(request):
 """
 This method is called from js file to delete comments of post
 """
+
+
 def delete_comment(request):
     comment_pk = request.GET.get('comment_pk', None)
     comment = CommentPostModel.objects.get(pk=comment_pk)
@@ -441,10 +517,11 @@ def delete_comment(request):
     return JsonResponse(data)
 
 
-
 """
 This method is called from js file to enhance score of image of user post
 """
+
+
 def add_score_image(request):
     post_pk = request.GET.get("post_pk", None)
     post = PostModel.objects.get(pk=post_pk)
@@ -461,9 +538,9 @@ def add_score_image(request):
 
         user = UserProfileInfo.objects.filter(user=post.user)[0]
         user.score = user.score + 1
-        if 21 > user.score > 15:
+        if 14 > user.score > 12:
             user.typeOfUser = "silver"
-        elif user.score > 20:
+        elif user.score > 13:
             user.typeOfUser = "golden"
         user.save()
 

@@ -7,3 +7,7 @@ nav{
     border: darkred solid;
     padding:5px;
 }
+#top-main-header{
+    background: rgba(232, 249, 215, 0.98);
+    padding: 20px;
+}

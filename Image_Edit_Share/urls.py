@@ -26,5 +26,6 @@ urlpatterns = [
                   url(r'^login/$', djangoView.LoginView.as_view(), name="login"),
                   url(r'^logout/$', djangoView.LogoutView.as_view(), name="logout"),
                   url(r'^register/$', views.register, name='register'),
+                  url(r'^contact_us/$', views.contact_us, name='contact_us'),
                   url(r'', include("Image_Edit_Share_App.urls")),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
