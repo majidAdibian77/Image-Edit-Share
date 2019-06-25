@@ -71,23 +71,29 @@ def profile_page(request, pk):
         user = User.objects.get(pk=pk)
     else:
         user = request.user
+    users_info = UserProfileInfo.objects.filter(user=user)
+    """""
+        This "if" is for when user is admin so he has not profile. 
+    """""
+    if users_info:
+        user_info = users_info[0]
+        user_posts = PostModel.objects.filter(user=user).order_by("post_time")
+        if user_posts:
+            path = user_posts[0].image.url
 
-    user_info = UserProfileInfo.objects.filter(user=user)[0]
-    user_posts = PostModel.objects.filter(user=user).order_by("post_time")
-    if user_posts:
-        path = user_posts[0].image.url
+            path = path[1:]
+            new_path1 = path[:path.rfind('.')] + "_new1" + path[path.rfind('.'):]
+            new_path2 = path[:path.rfind('.')] + "_new2" + path[path.rfind('.'):]
+            if os.path.exists(new_path1):
+                os.remove(path)
+                os.renames(new_path1, path)
+            if os.path.exists(new_path2):
+                os.remove(path)
+                os.renames(new_path2, path)
 
-        path = path[1:]
-        new_path1 = path[:path.rfind('.')] + "_new1" + path[path.rfind('.'):]
-        new_path2 = path[:path.rfind('.')] + "_new2" + path[path.rfind('.'):]
-        if os.path.exists(new_path1):
-            os.remove(path)
-            os.renames(new_path1, path)
-        if os.path.exists(new_path2):
-            os.remove(path)
-            os.renames(new_path2, path)
-
-    return render(request, "mainPages/profile_page.html", {"user_info": user_info, "user_posts": user_posts})
+        return render(request, "mainPages/profile_page.html", {"user_info": user_info, "user_posts": user_posts})
+    else:
+        return redirect("home")
 
 
 """
