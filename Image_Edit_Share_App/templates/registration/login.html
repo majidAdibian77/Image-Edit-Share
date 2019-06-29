@@ -2,7 +2,7 @@
 {% extends 'mainPages/base.html' %}
 {% block body_block %}
     <div class="container">
-        <div class="jumbotron my_form" style="margin-left: 400px;margin-right: 400px;margin-top: 10px">
+        <div class="jumbotron my_form" style="margin-left: 400px;margin-right: 400px;margin-top: 10px;background-color: whitesmoke">
             <h2 align="center" style="border-bottom: groove;font-style: oblique">Log In</h2>
             <form action="{% url 'login' %}" method="post" style="margin-left: 20px;margin-right: 20px">
                 {% csrf_token %}

@@ -73,8 +73,6 @@ function change_size(user_pk) {
         width_origin = 20;
     }
     else if (width > 600) {
-        // width_image.css('background', 'red');
-        // width_image.val(600);
         width = 600;
     }
     if (height < 20) {
@@ -84,8 +82,6 @@ function change_size(user_pk) {
         height_origin = 20;
     }
     else if (height > 600) {
-        // height_image.css('background', 'red');
-        // height_image.val(600);
         height = 600;
     }
     $.ajax({
@@ -190,7 +186,6 @@ function transpose() {
         }
     });
 }
-
 function download() {
     $("#download-link").attr("href", $("#show_image").attr("src"))
 }

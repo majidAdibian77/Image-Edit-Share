@@ -9,10 +9,10 @@ function add_score_image(post_pk) {
         success: function (data) {
             if (data["test"]) {
                 $('#show-score-'+post_pk).text("score:"+data["new_score"]);
-                alert("Your score is added!");
+                alert("your vote has been added");
             }
             else {
-                alert("You can not!!");
+                alert("You can't vote twice");
             }
         },
         failure: function (data) {

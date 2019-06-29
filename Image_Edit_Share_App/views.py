@@ -1,16 +1,14 @@
 import os
-import urllib.request
-
 from PIL import Image, ImageEnhance
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
-# Create your views here.
 from Image_Edit_Share_App.forms import UserForm, UserProfileInfoForm, PostForm
 from Image_Edit_Share_App.models import UserProfileInfo, PostModel, Users_give_score, CommentPostModel
+# Create your views here.
 
 """
 This method renders home page
@@ -138,7 +136,7 @@ def edit_profile(request):
         user_form = UserForm()
         profile_form = UserProfileInfoForm()
         user = User.objects.get(pk=request.user.id)
-        user.username = "username_is_changed"
+        user.username = user.username + "_username_is_changed"
         user.save()
     return render(request, "registration/register.html",
                   {'user_form': user_form,
